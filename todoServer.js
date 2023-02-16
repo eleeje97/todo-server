@@ -10,6 +10,9 @@ app.get('/', (req, res) => {
     res.send('Hello Express!')
 });
 
+
+/*** Account API ***/
+
 // 전체 사용자 조회
 app.get('/account/users', (req, res) => {
     const sql = 'select username from User';
@@ -112,6 +115,117 @@ app.get('/account/login', (req, res) => {
 });
 
 
+/*** Todo API ***/
+
+// Todo 등록
+app.post('/todo/register', (req, res) => {
+    const result = {};
+    let msg = '';
+
+    let username = req.body.username;
+    let user_id = 0;
+    let todo = req.body.todo;
+    let category = req.body.category;
+
+    result['username'] = username;
+    result['todo'] = todo;
+    result['category'] = category;
+
+    // username 잘 들어왔는지 확인
+    if (!req.body.username) {
+        result['msg'] = 'No Username!'
+        res.send(result);
+        return;
+    }
+
+    const sql = `select id from User where username='${username}'`;
+    connection.query(sql, (err, results) => {
+        if (err) throw err;
+
+        user_id = results[0].id;
+        const sql = `insert into Todo(user_id, todo_text, todo_category) values (${user_id}, '${todo}', '${category}')`;
+        connection.query(sql, (err, results) => {
+            if (err) throw err;
+
+            msg = 'Todo Successfully Registered!';
+            result['msg'] = msg;
+            console.log('result: ', result);
+            res.send(result);
+        });
+    });
+
+});
+
+// Todo 수정 (todo 내용, 카테고리)
+app.put('/todo/update', (req, res) => {
+
+});
+
+// Todo List 조회
+app.get('/todo/list', (req, res) => {
+    const result = {};
+    let username = req.query.username;
+    let user_id = 0;
+
+    result['username'] = username;
+
+    // username 잘 들어왔는지 확인
+    if (!req.query.username) {
+        result['msg'] = 'No Username!'
+        res.send(result);
+        return;
+    }
+
+    const sql = `select id from User where username='${username}'`;
+    connection.query(sql, (err, results) => {
+        if (err) throw err;
+
+        user_id = results[0].id;
+        const sql = `select * from Todo where user_id=${user_id}`;
+        connection.query(sql, (err, results) => {
+            if (err) throw err;
+            
+            console.log('results: ', results);
+            res.send({"todo list": results});
+        });
+    });
+
+});
+
+// Todo 체크/체크해제 
+app.get('/todo/check/:todo_id', (req, res) => {
+    const result = {};
+    let username = req.query.username;
+    let user_id = 0;
+
+    result['username'] = username;
+
+    // username 잘 들어왔는지 확인
+    if (!req.query.username) {
+        result['msg'] = 'No Username!'
+        res.send(result);
+        return;
+    }
+
+
+});
+
+// Todo 삭제
+app.delete('/todo/delete/:todo_id', (req, res) => {
+
+});
+
+/****************/
+
 app.listen(port, () => {
     console.log(`Todo Server listening on port ${port}`)
 });
+
+/*
+TODO: todo 관련 API에서 username이 유효한지
+TODO: todo list 조회 API에서
+1) regDate 날짜 포맷 수정
+2) username 추가
+3) todo_isCompleted T/F 타입으로 수정
+4) todo_id 빼기 -> 안돼 줘야 함
+*/ 
