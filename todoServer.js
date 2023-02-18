@@ -212,7 +212,28 @@ app.get('/todo/check/:todo_id', (req, res) => {
 
 // Todo 삭제
 app.delete('/todo/delete/:todo_id', (req, res) => {
+    let todo_id = req.params.todo_id;
 
+    const sql = `select todo_id from Todo where todo_id='${todo_id}'`;
+    connection.query(sql, (err, results) => {
+        if (err) throw err;
+
+        if (results.length === 0) {
+            res.send({"msg": "Todo Not Exists"});
+            return;
+        }
+
+        const sql = `delete from Todo where todo_id=${todo_id}`;
+        connection.query(sql, (err, results) => {
+            if (err) throw err;
+            
+            const result = {"todo_id": todo_id,
+                            "msg": "Todo Deleted!"};
+            console.log(result);
+            res.send(result);
+        });
+    });
+    
 });
 
 /****************/
