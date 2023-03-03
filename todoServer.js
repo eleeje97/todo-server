@@ -1,10 +1,14 @@
 const express = require('express');
+const cors = require('cors');
 const connection = require('./db');
 
 const app = express();
 const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    origin: '*'
+}));
 
 app.get('/', (req, res) => {
     res.send('Hello Express!')
@@ -156,7 +160,7 @@ app.post('/todo/register', (req, res) => {
 
 });
 
-// Todo 수정 (todo 내용, 카테고리)
+// Todo 수정 (todo 내용)
 app.put('/todo/update', (req, res) => {
 
 });
