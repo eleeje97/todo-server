@@ -42,13 +42,13 @@ app.post('/account/signup', (req, res) => {
     // Body 잘 들어왔는지 확인
     if (!req.body.username) {
         result['msg'] = 'No Username!'
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
     if (!req.body.password) {
         result['msg'] = 'No Password!'
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
         
@@ -61,7 +61,7 @@ app.post('/account/signup', (req, res) => {
             msg = 'User Already Exists';
             result['msg'] = msg;
             console.log('result: ', result);
-            res.send(result);
+            res.status(409).send(result);
         } else {
             // DB에 저장
             const sql = `insert into User(username, password) values ('${req.body.username}', '${req.body.password}')`;
@@ -86,13 +86,13 @@ app.get('/account/login', (req, res) => {
     // 쿼리스트링 잘 들어왔는지 확인
     if (!req.query.username) {
         result['msg'] = 'No Username!'
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
     if (!req.query.password) {
         result['msg'] = 'No Password!'
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -103,12 +103,14 @@ app.get('/account/login', (req, res) => {
         // 존재하는 회원인지 확인
         if (results.length === 0) {
             msg = 'User Not Found';
+            res.status(400);
         } else {
             // 비밀번호 확인
             if (req.query.password == results[0].password) {
                 msg = 'Login Success!';
             } else {
                 msg = 'Password Incorrect';
+                res.status(401);
             }
         }
         
@@ -138,7 +140,7 @@ app.post('/todo/register', (req, res) => {
     // username 잘 들어왔는지 확인
     if (!req.body.username) {
         result['msg'] = 'No Username!'
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -176,7 +178,7 @@ app.get('/todo/list', (req, res) => {
     // username 잘 들어왔는지 확인
     if (!req.query.username) {
         result['msg'] = 'No Username!'
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -207,7 +209,7 @@ app.get('/todo/check/:todo_id', (req, res) => {
     // username 잘 들어왔는지 확인
     if (!req.query.username) {
         result['msg'] = 'No Username!'
-        res.send(result);
+        res.status(400).send(result);
         return;
     }
 
@@ -223,7 +225,7 @@ app.delete('/todo/delete/:todo_id', (req, res) => {
         if (err) throw err;
 
         if (results.length === 0) {
-            res.send({"msg": "Todo Not Exists"});
+            res.status(404).send({"msg": "Todo Not Exists"});
             return;
         }
 
