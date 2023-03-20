@@ -213,6 +213,28 @@ app.get('/todo/check/:todo_id', (req, res) => {
         return;
     }
 
+    let todo_id = req.params.todo_id;
+
+    const sql = `select todo_isCompleted from Todo where todo_id='${todo_id}'`;
+    connection.query(sql, (err, results) => {
+        if (err) throw err;
+
+        if (results.length === 0) {
+            res.status(404).send({"msg": "Todo Not Exists"});
+            return;
+        }
+
+        let check = 1 - results[0].todo_isCompleted;
+        const sql = `update Todo set todo_isCompleted=${check} where todo_id=${todo_id}`;
+        connection.query(sql, (err, results) => {
+            if (err) throw err;
+            
+            const result = {"todo_id": todo_id,
+                            "todo_isCompleted": check};
+            console.log(result);
+            res.send(result);
+        });
+    });
 
 });
 
