@@ -269,12 +269,3 @@ app.delete('/todo/delete/:todo_id', (req, res) => {
 app.listen(port, () => {
     console.log(`Todo Server listening on port ${port}`)
 });
-
-/*
-TODO: todo 관련 API에서 username이 유효한지
-TODO: todo list 조회 API에서
-1) regDate 날짜 포맷 수정
-2) username 추가
-3) todo_isCompleted T/F 타입으로 수정
-4) todo_id 빼기 -> 안돼 줘야 함
-*/ 
