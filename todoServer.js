@@ -177,7 +177,6 @@ app.patch('/todo/:todo_id', (req, res) => {
             return;
         }
 
-        // 데이터 뽑기
         let todo_isCompleted = results[0].todo_isCompleted;
         let todo_text = results[0].todo_text;
 
@@ -229,6 +228,11 @@ app.get('/todo/list', (req, res) => {
         connection.query(sql, (err, results) => {
             if (err) throw err;
             
+            for (const idx in results) {
+                results[idx].todo_regDate = results[idx].todo_regDate.substr(0, 10)
+                results[idx].todo_isCompleted = results[idx].todo_isCompleted == 1 ? true : false;
+            }
+
             console.log('results: ', results);
             res.send({"todo list": results});
         });
