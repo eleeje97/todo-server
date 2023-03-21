@@ -229,7 +229,7 @@ app.get('/todo/list', (req, res) => {
             if (err) throw err;
             
             for (const idx in results) {
-                results[idx].todo_regDate = results[idx].todo_regDate.substr(0, 10)
+                results[idx].todo_regDate = results[idx].todo_regDate.substr(0, 10).replaceAll("-", ".");
                 results[idx].todo_isCompleted = results[idx].todo_isCompleted == 1 ? true : false;
             }
 
