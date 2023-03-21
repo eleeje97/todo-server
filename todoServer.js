@@ -124,7 +124,7 @@ app.post('/account/login', (req, res) => {
 /*** Todo API ***/
 
 // Todo 등록
-app.post('/todo/register', (req, res) => {
+app.post('/todo', (req, res) => {
     const result = {};
     let msg = '';
 
@@ -162,9 +162,47 @@ app.post('/todo/register', (req, res) => {
 
 });
 
-// Todo 수정 (todo 내용)
-app.put('/todo/update', (req, res) => {
+// Todo 수정 
+app.patch('/todo/:todo_id', (req, res) => {
+    const result = {};
 
+    let todo_id = req.params.todo_id;
+
+    const sql = `select todo_isCompleted, todo_text from Todo where todo_id='${todo_id}'`;
+    connection.query(sql, (err, results) => {
+        if (err) throw err;
+
+        if (results.length === 0) {
+            res.status(404).send({"msg": "Todo Not Exists"});
+            return;
+        }
+
+        // 데이터 뽑기
+        let todo_isCompleted = results[0].todo_isCompleted;
+        let todo_text = results[0].todo_text;
+
+        if (req.body.todo_isCompleted) {
+            todo_isCompleted = req.body.todo_isCompleted;
+        }
+
+        if (req.body.todo_text) {
+            todo_text = req.body.todo_text;
+        }
+
+        console.log(todo_isCompleted);
+        console.log(req.body.todo_text);
+
+        const sql = `update Todo set todo_isCompleted=${todo_isCompleted}, todo_text='${todo_text}' where todo_id=${todo_id}`;
+        connection.query(sql, (err, results) => {
+            if (err) throw err;
+            
+            const result = {"todo_id": todo_id,
+                            "todo_isCompleted": todo_isCompleted,
+                            "todo_text": todo_text};
+            console.log(result);
+            res.send(result);
+        });
+    });
 });
 
 // Todo List 조회
@@ -198,48 +236,9 @@ app.get('/todo/list', (req, res) => {
 
 });
 
-// Todo 체크/체크해제 
-app.get('/todo/check/:todo_id', (req, res) => {
-    const result = {};
-    let username = req.query.username;
-    let user_id = 0;
-
-    result['username'] = username;
-
-    // username 잘 들어왔는지 확인
-    if (!req.query.username) {
-        result['msg'] = 'No Username!'
-        res.status(400).send(result);
-        return;
-    }
-
-    let todo_id = req.params.todo_id;
-
-    const sql = `select todo_isCompleted from Todo where todo_id='${todo_id}'`;
-    connection.query(sql, (err, results) => {
-        if (err) throw err;
-
-        if (results.length === 0) {
-            res.status(404).send({"msg": "Todo Not Exists"});
-            return;
-        }
-
-        let check = 1 - results[0].todo_isCompleted;
-        const sql = `update Todo set todo_isCompleted=${check} where todo_id=${todo_id}`;
-        connection.query(sql, (err, results) => {
-            if (err) throw err;
-            
-            const result = {"todo_id": todo_id,
-                            "todo_isCompleted": check};
-            console.log(result);
-            res.send(result);
-        });
-    });
-
-});
 
 // Todo 삭제
-app.delete('/todo/delete/:todo_id', (req, res) => {
+app.delete('/todo/:todo_id', (req, res) => {
     let todo_id = req.params.todo_id;
 
     const sql = `select todo_id from Todo where todo_id='${todo_id}'`;
