@@ -78,25 +78,25 @@ app.post('/account/signup', (req, res) => {
 });
 
 // 로그인
-app.get('/account/login', (req, res) => {
+app.post('/account/login', (req, res) => {
     const result = {};
     let msg = '';
-    result['username'] = req.query.username;
+    result['username'] = req.body.username;
 
-    // 쿼리스트링 잘 들어왔는지 확인
-    if (!req.query.username) {
+    // Body 잘 들어왔는지 확인
+    if (!req.body.username) {
         result['msg'] = 'No Username!'
         res.status(400).send(result);
         return;
     }
 
-    if (!req.query.password) {
+    if (!req.body.password) {
         result['msg'] = 'No Password!'
         res.status(400).send(result);
         return;
     }
 
-    const sql = `select password from User where username='${req.query.username}'`;
+    const sql = `select password from User where username='${req.body.username}'`;
     connection.query(sql, (err, results) => {
         if (err) throw err;
 
@@ -106,7 +106,7 @@ app.get('/account/login', (req, res) => {
             res.status(400);
         } else {
             // 비밀번호 확인
-            if (req.query.password == results[0].password) {
+            if (req.body.password == results[0].password) {
                 msg = 'Login Success!';
             } else {
                 msg = 'Password Incorrect';
