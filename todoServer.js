@@ -180,11 +180,9 @@ app.patch('/todo/:todo_id', (req, res) => {
         let todo_isCompleted = results[0].todo_isCompleted == 1 ? true : false;
         let todo_text = results[0].todo_text;
 
-        if (req.body.todo_isCompleted === undefined) {
-            console.log("undefined!");
-        } else if (typeof(req.body.todo_isCompleted) === 'boolean') {
+        if (typeof(req.body.todo_isCompleted) === 'boolean') {
             todo_isCompleted = req.body.todo_isCompleted;
-        } else {
+        } else if (req.body.todo_isCompleted !== undefined) {
             res.status(400).send({"msg": "todo_isCompleted must be boolean type"});
             return;
         }
