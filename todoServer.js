@@ -177,19 +177,21 @@ app.patch('/todo/:todo_id', (req, res) => {
             return;
         }
 
-        let todo_isCompleted = results[0].todo_isCompleted;
+        let todo_isCompleted = results[0].todo_isCompleted == 1 ? true : false;
         let todo_text = results[0].todo_text;
 
-        if (req.body.todo_isCompleted) {
+        if (req.body.todo_isCompleted === undefined) {
+            console.log("undefined!");
+        } else if (typeof(req.body.todo_isCompleted) === 'boolean') {
             todo_isCompleted = req.body.todo_isCompleted;
+        } else {
+            res.status(400).send({"msg": "todo_isCompleted must be boolean type"});
+            return;
         }
 
         if (req.body.todo_text) {
             todo_text = req.body.todo_text;
         }
-
-        console.log(todo_isCompleted);
-        console.log(req.body.todo_text);
 
         const sql = `update Todo set todo_isCompleted=${todo_isCompleted}, todo_text='${todo_text}' where todo_id=${todo_id}`;
         connection.query(sql, (err, results) => {
