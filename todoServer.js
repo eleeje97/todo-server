@@ -132,10 +132,12 @@ app.post('/todo', (req, res) => {
     let user_id = 0;
     let todo = req.body.todo;
     let category = req.body.category;
+    let date = req.body.date;
 
     result['username'] = username;
     result['todo'] = todo;
     result['category'] = category;
+    result['date'] = date;
 
     // username 잘 들어왔는지 확인
     if (!req.body.username) {
@@ -149,7 +151,7 @@ app.post('/todo', (req, res) => {
         if (err) throw err;
 
         user_id = results[0].id;
-        const sql = `insert into Todo(user_id, todo_text, todo_category) values (${user_id}, '${todo}', '${category}')`;
+        const sql = `insert into Todo(user_id, todo_text, todo_category, todo_date) values (${user_id}, '${todo}', '${category}', '${date}')`;
         connection.query(sql, (err, results) => {
             if (err) throw err;
 
@@ -229,7 +231,6 @@ app.get('/todo/list', (req, res) => {
             if (err) throw err;
             
             for (const idx in results) {
-                results[idx].todo_regDate = results[idx].todo_regDate.substr(0, 10).replaceAll("-", ".");
                 results[idx].todo_isCompleted = results[idx].todo_isCompleted == 1 ? true : false;
             }
 
