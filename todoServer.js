@@ -206,16 +206,17 @@ app.patch('/todo/:todo_id', (req, res) => {
     });
 });
 
-// Todo List 조회
-app.get('/todo/list', (req, res) => {
+// Todo 조회
+app.get('/todo', (req, res) => {
     const result = {};
     let username = req.query.username;
+    let date = req.query.date;
     let user_id = 0;
 
     result['username'] = username;
 
     // username 잘 들어왔는지 확인
-    if (!req.query.username) {
+    if (!username) {
         result['msg'] = 'No Username!'
         res.status(400).send(result);
         return;
@@ -226,7 +227,11 @@ app.get('/todo/list', (req, res) => {
         if (err) throw err;
 
         user_id = results[0].id;
-        const sql = `select * from Todo where user_id=${user_id}`;
+        let sql = `select * from Todo where user_id=${user_id}`;
+        if (date) {
+            sql = `select * from Todo where user_id=${user_id} and todo_date='${date}'`;
+            result['date'] = date;
+        }
         connection.query(sql, (err, results) => {
             if (err) throw err;
             
